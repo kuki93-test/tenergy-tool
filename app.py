@@ -5,7 +5,9 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import plotly.graph_objects as go
 import urllib3
+import base64
 
+from sendgrid.helpers.mail import Attachment, FileContent, FileName, FileType, Disposition
 from openpyxl import load_workbook
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.drawing.image import Image
@@ -120,19 +122,39 @@ def napravi_tabelu(nos, sep):
 # =========================
 # EMAIL (OUTLOOK)
 # =========================
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
 def posalji_email(fajl, primaoci):
-    import win32com.client as win32
 
-    outlook = win32.Dispatch("Outlook.Application")
-    mail = outlook.CreateItem(0)
+    try:
+        sg = SendGridAPIClient(st.secrets["SENDGRID_API_KEY"])
 
-    mail.To = primaoci
-    mail.Subject = "NOSBiH vs SEPEX izvještaj"
-    mail.Body = "U prilogu izvještaj."
+        with open(fajl, "rb") as f:
+            file_data = f.read()
 
-    mail.Attachments.Add(fajl)
+        encoded_file = base64.b64encode(file_data).decode()
 
-    mail.Display()
+        message = Mail(
+            from_email="your_verified_email@domain.com",
+            to_emails=[e.strip() for e in primaoci.split(",")],
+            subject="NOSBiH vs SEPEX izvještaj",
+            html_content="<strong>U prilogu se nalazi izvještaj.</strong>"
+        )
+
+        attachment = Attachment(
+            FileContent(encoded_file),
+            FileName(fajl),
+            FileType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+            Disposition("attachment")
+        )
+
+        message.attachment = attachment
+
+        sg.send(message)
+
+    except Exception as e:
+        st.error(f"Greška pri slanju: {e}")
 
 # =========================
 # SESSION
