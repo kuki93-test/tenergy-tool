@@ -136,7 +136,7 @@ def posalji_email(fajl, primaoci):
         encoded_file = base64.b64encode(file_data).decode()
 
         message = Mail(
-            from_email="your_verified_email@domain.com",
+            from_email="transformbl@gmail.com",
             to_emails=[e.strip() for e in primaoci.split(",")],
             subject="NOSBiH vs SEPEX izvještaj",
             html_content="<strong>U prilogu se nalazi izvještaj.</strong>"
@@ -284,4 +284,4 @@ if st.session_state.run_clicked:
             st.error("Unesi email")
         else:
             posalji_email(naziv_fajla, email)
-            st.success("Email otvoren u Outlooku ✔")
+            
