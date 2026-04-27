@@ -235,7 +235,7 @@ if st.session_state.run_clicked:
     ws.insert_rows(1)
     ws.insert_rows(1)
 
-    ws["A1"] = "TENERGY REPORT"
+    ws["A1"] = "TRANSFORM IZVJESTAJ"
     ws["A2"] = f"NOSBiH vs SEPEX ({datum_str})"
 
     ws.merge_cells("A1:H1")
